@@ -8,3 +8,5 @@ router.register(r"", PaymentViewSet, basename="payment")
 urlpatterns = [
     path("", include(router.urls)),
 ]
+
+app_name = "payment"
