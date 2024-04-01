@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from payment.models import Payment
 from payment.serializers import PaymentSerializer
@@ -12,6 +13,14 @@ stripe.api_key = "SECRET_KEY"
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Payment.objects.all()
+        else:
+            return Payment.objects.filter(user=user)
 
     @action(detail=True, methods=["get"])
     def success(self, request, pk=None):
@@ -36,4 +45,4 @@ class PaymentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def cancel(self, request):
-        return Response({"message": "Payment failed"}, status=status.HTTP_200_OK)
+        return Response({"message": "Payment cancelled"}, status=status.HTTP_200_OK)
