@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from payment.models import Payment
 from payment.serializers import PaymentSerializer
@@ -50,8 +50,8 @@ class PaymentSerializerTestCase(TestCase):
 class PaymentViewSetTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="12345")
-        self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
         self.payment = Payment.objects.create(
             status="PENDING",
