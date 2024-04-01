@@ -14,5 +14,4 @@ class Book(models.Model):
     daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        return (f"{self.title} {self.author} {self.inventory}"
-                f" {self.inventory} {str(self.daily_fee)}")
+        return f"{self.title} {self.author} {str(self.daily_fee)}"
