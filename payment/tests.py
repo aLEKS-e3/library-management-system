@@ -48,7 +48,10 @@ class PaymentSerializerTestCase(TestCase):
 
 class PaymentViewSetTestCase(APITestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="testuser", password="12345")
+        self.user = get_user_model().objects.create_user(
+            password="12345",
+            email="test@test.com",
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
