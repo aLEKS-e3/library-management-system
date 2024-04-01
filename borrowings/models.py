@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -7,12 +6,8 @@ class Borrowing(models.Model):
     borrow_date = models.DateField()
     expected_return_date = models.DateField()
     actual_return_date = models.DateField(null=True, blank=True)
-    book_id = models.IntegerField(
-        validators=[MinValueValidator(1)]
-    )
-    user_id = models.IntegerField(
-        validators=[MinValueValidator(1)]
-    )
+    book_id = models.PositiveIntegerField()
+    user_id = models.PositiveIntegerField()
 
     def clean(self):
         if self.borrow_date > self.expected_return_date:
