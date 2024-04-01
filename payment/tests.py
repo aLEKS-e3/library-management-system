@@ -33,14 +33,14 @@ class PaymentSerializerTestCase(TestCase):
             "borrowing_id": 2,
             "session_url": "https://test.com",
             "session_id": "test_session_id_2",
-            "money_to_pay": 50.00,
         }
         self.serializer = PaymentSerializer(data=self.payment_data)
 
-    def test_serializer_valid(self):
-        self.assertTrue(self.serializer.is_valid())
+    def test_serializer_not_valid(self):
+        self.assertFalse(self.serializer.is_valid())
 
     def test_serializer_save(self):
+        self.payment_data["money_to_pay"] = 50
         self.assertTrue(self.serializer.is_valid())
         self.serializer.save()
         payment = Payment.objects.get(borrowing_id=2)
