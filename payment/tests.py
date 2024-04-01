@@ -1,8 +1,7 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
 from payment.models import Payment
@@ -49,7 +48,7 @@ class PaymentSerializerTestCase(TestCase):
 
 class PaymentViewSetTestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.user = get_user_model().objects.create_user(username="testuser", password="12345")
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
