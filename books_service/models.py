@@ -3,12 +3,12 @@ from django.db import models
 
 class Book(models.Model):
     COVER = [
-        ("HARD", ),
-        ("SOFT", )
+        ("HARD", "Hard cover"),
+        ("SOFT", "Soft cover")
     ]
 
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
-    cover = models.CharField(choices=COVER)
+    cover = models.CharField(max_length=10, choices=COVER)
     inventory = models.PositiveIntegerField()
-    daily_fee = models.DecimalField(max_digits=3, decimal_places=2)
+    daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
