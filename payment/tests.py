@@ -47,6 +47,9 @@ class PaymentSerializerTestCase(TestCase):
 
 
 class PaymentViewSetTestCase(APITestCase):
+    PAYMENT_LIST = reverse("payment:payment-list")
+    PAYMENT_DETAIL = "payment:payment-detail"
+
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             password="12345",
@@ -82,7 +85,7 @@ class PaymentViewSetTestCase(APITestCase):
         }
 
     def test_get_all_payments(self):
-        response = self.client.get(reverse("payment:payment-list"))
+        response = self.client.get(self.PAYMENT_LIST)
         payments = Payment.objects.all()
         serializer = PaymentSerializer(payments, many=True)
         self.assertEqual(response.data, serializer.data)
@@ -90,19 +93,19 @@ class PaymentViewSetTestCase(APITestCase):
 
     def test_create_valid_payment(self):
         response = self.client.post(
-            reverse("payment:payment-list"), data=self.valid_payload, format="json"
+            self.PAYMENT_LIST, data=self.valid_payload, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_invalid_payment(self):
         response = self.client.post(
-            reverse("payment:payment-list"), data=self.invalid_payload, format="json"
+            self.PAYMENT_LIST, data=self.invalid_payload, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_payment_status(self):
         response = self.client.patch(
-            reverse("payment:payment-detail", kwargs={"pk": self.payment.pk}),
+            reverse(self.PAYMENT_DETAIL, kwargs={"pk": self.payment.pk}),
             data={"status": "PAID"},
             format="json",
         )
