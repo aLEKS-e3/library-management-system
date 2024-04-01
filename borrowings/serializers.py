@@ -5,15 +5,8 @@ from books_service.serializers import BookSerializer
 from borrowings.models import Borrowing
 
 
-class BorrowingListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Borrowing
-        fields = "__all__"
-
-
-class BorrowingDetailSerializer(serializers.ModelSerializer):
-    book_id = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all())
+class BorrowingSerializer(serializers.ModelSerializer):
+    book = serializers.SerializerMethodField()
 
     class Meta:
         model = Borrowing
@@ -23,12 +16,30 @@ class BorrowingDetailSerializer(serializers.ModelSerializer):
             "expected_return_date",
             "actual_return_date",
             "user_id",
-            "book_id"
+            "book_id",
+            "book"
         )
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        book_id = representation.pop("book_id")
-        book = Book.objects.get(pk=book_id)
-        representation["book"] = BookSerializer(book).data
-        return representation
+    def get_book(self, obj):
+        book_id = obj.book_id
+        book = Book.objects.get(id=book_id)
+        book_serializer = BookSerializer(book)
+        return book_serializer.data
+
+
+class BorrowingListSerializer(BorrowingSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "id",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "book"
+        )
+
+
+class BorrowingDetailSerializer(BorrowingSerializer):
+    class Meta:
+        model = Borrowing
+        fields = "__all__"
