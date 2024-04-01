@@ -14,3 +14,7 @@ class Borrowing(models.Model):
             raise ValidationError("Expected return date must be after borrow date")
         if self.actual_return_date and self.actual_return_date < self.borrow_date:
             raise ValidationError("Actual return date must be after borrow date")
+
+    def __str__(self):
+        return (f"Book: {self.book_id}, User: {self.user_id},"
+                f" {self.borrow_date} - {self.expected_return_date}")
