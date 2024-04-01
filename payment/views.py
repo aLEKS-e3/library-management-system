@@ -20,7 +20,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return Payment.objects.all()
         else:
-            return Payment.objects.filter(user=user)
+            return Payment.objects.filter(borrowing_id=user.pk)
 
     @action(detail=True, methods=["get"])
     def success(self, request, pk=None):
