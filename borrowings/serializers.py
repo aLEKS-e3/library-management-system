@@ -6,6 +6,7 @@ from borrowings.models import Borrowing
 
 
 class BorrowingListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Borrowing
         fields = "__all__"
