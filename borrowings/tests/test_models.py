@@ -1,10 +1,18 @@
+from datetime import date, timedelta
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-from django.utils import timezone
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from books_service.models import Book
 from borrowings.models import Borrowing
+
+
+BORROWING_RETURN_URL = reverse(
+    "borrowings:borrowings-return-borrowing", kwargs={"pk": 1}
+)
 
 
 class BorrowingModelTest(TestCase):
@@ -26,8 +34,8 @@ class BorrowingModelTest(TestCase):
         Test that a Borrowing object with valid dates does not raise any validation errors.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now(),
-            expected_return_date=timezone.now() + timezone.timedelta(days=7),
+            borrow_date=date.today(),
+            expected_return_date=date.today() + timedelta(days=7),
             actual_return_date=None,
             book=self.book,
             user=self.user
@@ -40,8 +48,8 @@ class BorrowingModelTest(TestCase):
         Test that an invalid expected return date raises a validation error.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now(),
-            expected_return_date=timezone.now() - timezone.timedelta(days=7),
+            borrow_date=date.today(),
+            expected_return_date=date.today() - timedelta(days=7),
             actual_return_date=None,
             book=self.book,
             user=self.user
@@ -54,9 +62,9 @@ class BorrowingModelTest(TestCase):
         Test that an invalid actual return date raises a validation error.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now(),
-            expected_return_date=timezone.now() + timezone.timedelta(days=7),
-            actual_return_date=timezone.now() - timezone.timedelta(days=7),
+            borrow_date=date.today(),
+            expected_return_date=date.today() + timedelta(days=7),
+            actual_return_date=date.today() - timedelta(days=7),
             book=self.book,
             user=self.user
         )
@@ -68,10 +76,48 @@ class BorrowingModelTest(TestCase):
         Test that providing an actual return date after the borrow date does not raise any validation errors.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now() - timezone.timedelta(days=7),
-            expected_return_date=timezone.now(),
-            actual_return_date=timezone.now(),
+            borrow_date=date.today() - timedelta(days=7),
+            expected_return_date=date.today(),
+            actual_return_date=date.today(),
             book=self.book,
             user=self.user
         )
         borrowing.full_clean()
+
+
+class BorrowingViewTests(APITestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(
+            email="email@mail.com",
+            password="111222"
+        )
+        self.book = Book.objects.create(
+            title="Big boobs",
+            author="Big Bob",
+            cover="Hard cover",
+            inventory=24,
+            daily_fee=100
+        )
+        self.borrowing = Borrowing.objects.create(
+            borrow_date=date.today() - timedelta(days=2),
+            expected_return_date=date.today() + timedelta(days=5),
+            book=self.book,
+            user=self.user
+        )
+        self.client.force_login(self.user)
+
+    def test_return_endpoint_response(self):
+        response = self.client.post(BORROWING_RETURN_URL)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_return_borrowing_correct_db_recordings(self):
+        response = self.client.post(BORROWING_RETURN_URL)
+        self.borrowing.refresh_from_db()
+        self.book.refresh_from_db()
+
+        self.assertEqual(
+            self.borrowing.actual_return_date, date.today()
+        )
+        self.assertEqual(
+            self.book.inventory, 25
+        )
