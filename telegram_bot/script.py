@@ -13,4 +13,5 @@ tb = telebot.TeleBot(TOKEN)
 
 
 def send_borrowing_info(message: str) -> None:
-    tb.send_message(chat_id, message)
+    if message:
+        tb.send_message(chat_id, message)
