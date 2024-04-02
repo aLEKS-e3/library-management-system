@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 
 from books_service.models import Book
 from borrowings.models import Borrowing
@@ -15,6 +15,7 @@ BORROWING_RETURN_URL = reverse(
 
 class BorrowingViewTests(APITestCase):
     def setUp(self) -> None:
+        self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             email="email@mail.com",
             password="111222"
