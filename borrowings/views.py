@@ -13,7 +13,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     serializer_class = BorrowingSerializer
 
     def get_queryset(self):
-        return Borrowing.objects.filter(user__id=self.request.user.id)
+        return Borrowing.objects.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -22,6 +22,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
             return BorrowingCreateSerializer
         return self.serializer_class
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
     @action(
         methods=["POST"],
         detail=True,
