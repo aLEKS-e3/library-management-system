@@ -14,5 +14,4 @@ class PaymentViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_superuser:
             return Payment.objects.all()
-        else:
-            return Payment.objects.filter(borrowing_id=user.pk)
+        return Payment.objects.filter(borrowing_id=user.pk)
