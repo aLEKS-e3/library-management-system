@@ -31,7 +31,7 @@ class BorrowingModelTest(TestCase):
             expected_return_date=timezone.now() + timezone.timedelta(days=7),
             actual_return_date=None,
             book=self.book,
-            user=self.user
+            user=self.user,
         )
         # This should not raise any validation errors
         borrowing.full_clean()
