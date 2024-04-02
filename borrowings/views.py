@@ -17,3 +17,6 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return BorrowingCreateSerializer
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
