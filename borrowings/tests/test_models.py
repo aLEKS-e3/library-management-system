@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -17,7 +18,7 @@ class BorrowingModelTest(TestCase):
             daily_fee=20.0
 
         )
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             email="test@test.com",
             password="test"
         )
@@ -31,7 +32,7 @@ class BorrowingModelTest(TestCase):
             expected_return_date=timezone.now() + timezone.timedelta(days=7),
             actual_return_date=None,
             book=self.book,
-            user=self.user
+            user=self.user,
         )
         # This should not raise any validation errors
         borrowing.full_clean()
