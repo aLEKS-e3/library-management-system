@@ -20,10 +20,10 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         book = Book.objects.get(id=request.data.get("book"))
-        user = self.request.user.email
+        email = self.request.user.email
         date = request.data.get("expected_return_date")
 
-        text = f"New borrowing by {user}, took {book}, expected return on {date}"
+        text = f"New borrowing by {email}\nTook \"{book}\" book\nExpected return on {date}"
         send_borrowing_info(text)
 
         return super().create(request, *args, **kwargs)
