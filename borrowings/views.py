@@ -20,7 +20,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @staticmethod
     def _params_to_ints(qs):
         """Converts a list of string IDs to a list of integers"""
-        return [int(str_id) for str_id in qs[:-1].split(",")]
+        return [int(str_id) for str_id in qs.split(",") if str_id]
 
     def get_queryset(self):
         queryset = self.queryset
