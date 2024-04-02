@@ -127,7 +127,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ]
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
 }
 
 SIMPLE_JWT = {
@@ -137,9 +140,5 @@ SIMPLE_JWT = {
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
 }
 
-STRIPE_PUBLIC_KEY = (
-    "pk_test_51P12UOP2hjD7x7Axc13KcR9TtCVbbS0PbxbCCtwJCOiBTyusSW4kV9IKvEYmlOIsdDVI3uM61aWgd6xJh7czZIv100rIc08H8q"
-)
-STRIPE_SECRET_KEY = (
-    "sk_test_51P12UOP2hjD7x7Ax1r1uVshKA1Fnmv9AqffVG5239yUejpwull7fTj2TocW4tK49k0uU3kkowtILQf9IBu6iyBBl00Mn8I96SI"
-)
+STRIPE_PUBLIC_KEY = "pk_test_51P12UOP2hjD7x7Axc13KcR9TtCVbbS0PbxbCCtwJCOiBTyusSW4kV9IKvEYmlOIsdDVI3uM61aWgd6xJh7czZIv100rIc08H8q"
+STRIPE_SECRET_KEY = "sk_test_51P12UOP2hjD7x7Ax1r1uVshKA1Fnmv9AqffVG5239yUejpwull7fTj2TocW4tK49k0uU3kkowtILQf9IBu6iyBBl00Mn8I96SI"
