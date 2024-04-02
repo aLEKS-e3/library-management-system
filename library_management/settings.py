@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     "payment",
     "user",
     "books_service",
-    "borrowings"
+    "borrowings",
 ]
 
 MIDDLEWARE = [
@@ -133,5 +134,12 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZE"
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
 }
+
+STRIPE_PUBLIC_KEY = (
+    "pk_test_51P12UOP2hjD7x7Axc13KcR9TtCVbbS0PbxbCCtwJCOiBTyusSW4kV9IKvEYmlOIsdDVI3uM61aWgd6xJh7czZIv100rIc08H8q"
+)
+STRIPE_SECRET_KEY = (
+    "sk_test_51P12UOP2hjD7x7Ax1r1uVshKA1Fnmv9AqffVG5239yUejpwull7fTj2TocW4tK49k0uU3kkowtILQf9IBu6iyBBl00Mn8I96SI"
+)
