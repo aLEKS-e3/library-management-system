@@ -1,7 +1,9 @@
 from rest_framework import viewsets
 
+from books_service.models import Book
 from borrowings.models import Borrowing
 from borrowings.serializers import BorrowingListSerializer, BorrowingSerializer
+from telegram_bot.script import send_borrowing_info
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
@@ -15,3 +17,13 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
         return self.serializer_class
+
+    def create(self, request, *args, **kwargs):
+        book = Book.objects.get(id=request.data.get("book"))
+        user = self.request.user.email
+        date = request.data.get("expected_return_date")
+
+        text = f"New borrowing by {user}, took {book}, expected return on {date}"
+        send_borrowing_info(text)
+
+        return super().create(request, *args, **kwargs)
