@@ -28,6 +28,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
 
 class BorrowingListSerializer(BorrowingSerializer):
+
     class Meta:
         model = Borrowing
         fields = (
@@ -40,6 +41,7 @@ class BorrowingListSerializer(BorrowingSerializer):
 
 
 class BorrowingDetailSerializer(BorrowingSerializer):
+
     class Meta:
         model = Borrowing
         fields = "__all__"
