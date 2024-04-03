@@ -9,11 +9,15 @@ from rest_framework.viewsets import GenericViewSet
 
 from books_service.models import Book
 from borrowings.models import Borrowing
+from payment.models import Payment
+from borrowings.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.serializers import (
     BorrowingSerializer,
     BorrowingListSerializer,
 )
 from telegram_bot.script import send_borrowing_info
+
+FINE_MULTIPLIER = 2
 
 
 class BorrowingViewSet(
@@ -69,6 +73,21 @@ class BorrowingViewSet(
 
         return super().create(request, *args, **kwargs)
 
+    def calculate_fine(self, borrowing, request):
+        if borrowing.actual_return_date > borrowing.expected_return_date:
+            days_overdue = (borrowing.actual_return_date - borrowing.expected_return_date).days
+            fine_amount = days_overdue * borrowing.book.daily_fee * FINE_MULTIPLIER
+
+            payment = Payment.objects.create(
+                status="PENDING",
+                type="FINE",
+                borrowing_id=borrowing.id,
+                session_url=request.build_absolute_uri(),
+                session_id=request.session.session_key,
+                money_to_pay=fine_amount
+            )
+            payment.save()
+
     @action(
         methods=["POST"],
         detail=True,
@@ -83,6 +102,8 @@ class BorrowingViewSet(
 
         borrowing.actual_return_date = date.today()
         borrowing.book.inventory += 1
+
+        self.calculate_fine(borrowing, request)
 
         borrowing.save()
         borrowing.book.save()
