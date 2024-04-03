@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from books_service.models import Book
 from borrowings.models import Borrowing
-from borrowings.serializers import BorrowingListSerializer, BorrowingSerializer
+from borrowings.serializers import BorrowingListSerializer, BorrowingSerializer, BorrowingCreateSerializer
 from telegram_bot.script import send_borrowing_info
 
 
@@ -15,13 +15,19 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     serializer_class = BorrowingSerializer
 
     def get_queryset(self):
-        return Borrowing.objects.filter(user__id=self.request.user.id)
+        return Borrowing.objects.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
+        
+        if self.action == "create":
+            return BorrowingCreateSerializer
         return self.serializer_class
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+      
     def create(self, request, *args, **kwargs):
         book = Book.objects.get(id=request.data.get("book"))
         email = self.request.user.email
