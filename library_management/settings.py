@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +45,11 @@ INSTALLED_APPS = [
     "user",
     "books_service",
     "borrowings",
+    "drf_spectacular",
+    "telegram_bot",
+    "django_celery_beat",
+    "debug_toolbar",
+
 ]
 
 MIDDLEWARE = [
@@ -49,6 +58,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -125,9 +135,17 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Library management system API",
+    "DESCRIPTION": "API to manage borrowings, payments, and much more!",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SIMPLE_JWT = {
@@ -139,3 +157,10 @@ SIMPLE_JWT = {
 
 STRIPE_PUBLIC_KEY = "pk_test_51P12UOP2hjD7x7Axc13KcR9TtCVbbS0PbxbCCtwJCOiBTyusSW4kV9IKvEYmlOIsdDVI3uM61aWgd6xJh7czZIv100rIc08H8q"
 STRIPE_SECRET_KEY = "sk_test_51P12UOP2hjD7x7Ax1r1uVshKA1Fnmv9AqffVG5239yUejpwull7fTj2TocW4tK49k0uU3kkowtILQf9IBu6iyBBl00Mn8I96SI"
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
