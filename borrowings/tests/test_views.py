@@ -43,6 +43,7 @@ class BorrowingViewTests(APITestCase):
 
     def test_return_borrowing_correct_db_recordings(self):
         response = self.client.post(BORROWING_RETURN_URL)
+
         self.borrowing.refresh_from_db()
         self.book.refresh_from_db()
 

@@ -1,7 +1,9 @@
 from datetime import date
 from django.shortcuts import get_object_or_404
+from dfr_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from borrowings.models import Borrowing
@@ -49,7 +51,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @action(
         methods=["POST"],
         detail=True,
-        url_path="return"
+        url_path="return",
+        permission_classes=[IsAuthenticated]
     )
     def return_borrowing(self, request, pk=None):
         borrowing = get_object_or_404(Borrowing, pk=pk)
@@ -64,3 +67,25 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         borrowing.book.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "title",
+                type={"type": "list", "items": {"type": "string"}},
+                description="Filter movies by title (eg. ?title=inc)"
+            ),
+            OpenApiParameter(
+                "genres",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter movies by genre ids (eg. ?genres=1,3)"
+            ),
+            OpenApiParameter(
+                "actors",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter movies by actor ids (eg. ?actors=3,7)"
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
