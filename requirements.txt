@@ -17,5 +17,5 @@ pycodestyle==2.11.1
 pyflakes==3.2.0
 PyJWT==2.8.0
 sqlparse==0.4.4
-stripe==2.0.0
+stripe==8.10.0b1
 tzdata==2024.1
