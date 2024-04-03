@@ -1,26 +1,30 @@
 from datetime import date
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets, status
+from rest_framework import status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from books_service.models import Book
 from borrowings.models import Borrowing
-from borrowings.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.serializers import (
     BorrowingSerializer,
     BorrowingListSerializer,
-    BorrowingCreateSerializer
 )
 from telegram_bot.script import send_borrowing_info
 
 
-class BorrowingViewSet(viewsets.ModelViewSet):
+class BorrowingViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    GenericViewSet
+):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
+    permission_classes = [IsAuthenticated]
 
     @staticmethod
     def _params_to_ints(qs):
@@ -49,9 +53,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
-        
-        if self.action == "create":
-            return BorrowingCreateSerializer
+
         return self.serializer_class
 
     def perform_create(self, serializer):
