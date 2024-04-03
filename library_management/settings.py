@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     "payment",
     "user",
     "books_service",
-    "borrowings"
+    "borrowings",
+    "telegram_bot",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -135,3 +137,9 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZE"
 }
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
