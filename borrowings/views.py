@@ -1,6 +1,6 @@
 from datetime import date
 from django.shortcuts import get_object_or_404
-from dfr_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -71,20 +71,17 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                "title",
-                type={"type": "list", "items": {"type": "string"}},
-                description="Filter movies by title (eg. ?title=inc)"
+                "is_active",
+                type={"type": "list", "items": {"type": "any"}},
+                description="Filter borrowings by status (eg. ?is_active=)"
             ),
             OpenApiParameter(
-                "genres",
+                "user_id",
                 type={"type": "list", "items": {"type": "number"}},
-                description="Filter movies by genre ids (eg. ?genres=1,3)"
-            ),
-            OpenApiParameter(
-                "actors",
-                type={"type": "list", "items": {"type": "number"}},
-                description="Filter movies by actor ids (eg. ?actors=3,7)"
-            ),
+                description=(
+                    "Admin user ids filter "
+                    "for borrowings (eg. ?user_id=1,3)")
+            )
         ]
     )
     def list(self, request, *args, **kwargs):

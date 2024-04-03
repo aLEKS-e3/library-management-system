@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     "payment",
     "user",
     "books_service",
-    "borrowings"
+    "borrowings",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -124,9 +125,17 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ]
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Library management system API",
+    "DESCRIPTION": "API to manage borrowings, payments, and much more!",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SIMPLE_JWT = {
