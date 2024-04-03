@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 from django.utils import timezone
 
 from books_service.models import Book
@@ -31,9 +31,8 @@ class BorrowingModelTest(TestCase):
             expected_return_date=timezone.now() + timezone.timedelta(days=7),
             actual_return_date=None,
             book=self.book,
-            user=self.user,
+            user=self.user
         )
-        # This should not raise any validation errors
         borrowing.full_clean()
 
     def test_invalid_expected_return_date(self):
