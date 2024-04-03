@@ -29,7 +29,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/aLEKS-e3/library-management-system.git
-cd Theatre-API
+cd library-management-system
 ```
 
 Create a .env file in the root directory.
