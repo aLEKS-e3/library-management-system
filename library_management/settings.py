@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -39,7 +40,9 @@ INSTALLED_APPS = [
     "payment",
     "user",
     "books_service",
-    "borrowings"
+    "borrowings",
+    "telegram_bot",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -133,5 +136,12 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZE"
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
 }
+
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
