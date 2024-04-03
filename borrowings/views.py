@@ -6,12 +6,15 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from books_service.models import Book
 from borrowings.models import Borrowing
 from borrowings.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.serializers import (
+    BorrowingSerializer,
     BorrowingListSerializer,
-    BorrowingSerializer
+    BorrowingCreateSerializer
 )
+from telegram_bot.script import send_borrowing_info
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
@@ -46,7 +49,23 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
+        
+        if self.action == "create":
+            return BorrowingCreateSerializer
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+      
+    def create(self, request, *args, **kwargs):
+        book = Book.objects.get(id=request.data.get("book"))
+        email = self.request.user.email
+        date = request.data.get("expected_return_date")
+
+        text = f"New borrowing by {email}\nTook \"{book}\" book\nExpected return on {date}"
+        send_borrowing_info(text)
+
+        return super().create(request, *args, **kwargs)
 
     @action(
         methods=["POST"],
