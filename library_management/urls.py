@@ -7,4 +7,5 @@ urlpatterns = [
     path("api/literature/", include("books_service.urls", namespace="books_service")),
     path("api/borrowings/", include("borrowings.urls", namespace="borrowings")),
     path("api/payment/", include("payment.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
