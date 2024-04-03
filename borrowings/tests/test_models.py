@@ -3,9 +3,9 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+
 from books_service.models import Book
 from borrowings.models import Borrowing
-from user.models import User
 
 
 class BorrowingModelTest(TestCase):
@@ -21,6 +21,7 @@ class BorrowingModelTest(TestCase):
         self.user = get_user_model().objects.create_user(
             email="test@test.com",
             password="test"
+
         )
 
     def test_valid_borrowing(self):
@@ -28,11 +29,11 @@ class BorrowingModelTest(TestCase):
         Test that a Borrowing object with valid dates does not raise any validation errors.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now(),
-            expected_return_date=timezone.now() + timezone.timedelta(days=7),
+            borrow_date=date.today(),
+            expected_return_date=date.today() + timedelta(days=7),
             actual_return_date=None,
             book=self.book,
-            user=self.user,
+            user=self.user
         )
         # This should not raise any validation errors
         borrowing.full_clean()
@@ -42,8 +43,8 @@ class BorrowingModelTest(TestCase):
         Test that an invalid expected return date raises a validation error.
         """
         borrowing = Borrowing(
-            borrow_date=timezone.now(),
-            expected_return_date=timezone.now() - timezone.timedelta(days=7),
+            borrow_date=date.today(),
+            expected_return_date=date.today() - timedelta(days=7),
             actual_return_date=None,
             book=self.book,
             user=self.user
