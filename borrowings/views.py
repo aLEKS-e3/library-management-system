@@ -1,5 +1,7 @@
 from datetime import date
-from django.shortcuts import get_object_or_404
+
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, mixins
 from rest_framework.decorators import action
@@ -9,15 +11,12 @@ from rest_framework.viewsets import GenericViewSet
 
 from books_service.models import Book
 from borrowings.models import Borrowing
-from payment.models import Payment
-from borrowings.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.serializers import (
     BorrowingSerializer,
     BorrowingListSerializer,
 )
 from telegram_bot.script import send_borrowing_info
-
-FINE_MULTIPLIER = 2
+from borrowings.support_functions import params_to_ints
 
 
 class BorrowingViewSet(
@@ -29,11 +28,6 @@ class BorrowingViewSet(
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
     permission_classes = [IsAuthenticated]
-
-    @staticmethod
-    def _params_to_ints(qs):
-        """Converts a list of string IDs to a list of integers"""
-        return [int(str_id) for str_id in qs.split(",") if str_id]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -47,7 +41,7 @@ class BorrowingViewSet(
             return queryset.filter(user=self.request.user)
 
         if user_id_param:
-            user_id = self._params_to_ints(user_id_param)
+            user_id = params_to_ints(user_id_param)
 
             if user_id:
                 queryset = queryset.filter(user__id__in=user_id)
@@ -62,7 +56,8 @@ class BorrowingViewSet(
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-      
+        redirect(reverse("payment:create-checkout-session"), {"pk": serializer.data["borrowing_id"]})
+
     def create(self, request, *args, **kwargs):
         book = Book.objects.get(id=request.data.get("book"))
         email = self.request.user.email
@@ -72,21 +67,6 @@ class BorrowingViewSet(
         send_borrowing_info(text)
 
         return super().create(request, *args, **kwargs)
-
-    def calculate_fine(self, borrowing, request):
-        if borrowing.actual_return_date > borrowing.expected_return_date:
-            days_overdue = (borrowing.actual_return_date - borrowing.expected_return_date).days
-            fine_amount = days_overdue * borrowing.book.daily_fee * FINE_MULTIPLIER
-
-            payment = Payment.objects.create(
-                status="PENDING",
-                type="FINE",
-                borrowing_id=borrowing.id,
-                session_url=request.build_absolute_uri(),
-                session_id=request.session.session_key,
-                money_to_pay=fine_amount
-            )
-            payment.save()
 
     @action(
         methods=["POST"],
@@ -121,8 +101,8 @@ class BorrowingViewSet(
                 "user_id",
                 type={"type": "list", "items": {"type": "number"}},
                 description=(
-                    "Admin user ids filter "
-                    "for borrowings (eg. ?user_id=1,3)")
+                        "Admin user ids filter "
+                        "for borrowings (eg. ?user_id=1,3)")
             )
         ]
     )
