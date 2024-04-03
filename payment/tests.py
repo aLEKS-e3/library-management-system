@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
+from books_service.models import Book
 from payment.models import Payment
 from payment.serializers import PaymentSerializer
 
@@ -110,3 +112,29 @@ class PaymentViewSetTestCase(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+# class CreateStripeCheckoutSessionViewTestCase(APITestCase):
+#     def setUp(self):
+#         self.user = get_user_model().objects.create_user(
+#             password="12345",
+#             email="test@test.com",
+#         )
+#         self.client = APIClient()
+#         self.client.force_authenticate(user=self.user)
+#         self.book = Book.objects.create(
+#             title="Test Book",
+#             author="Test Author",
+#             daily_fee=10.00,
+#             inventory=1,
+#         )
+#         print(self.book)
+
+    # def test_create_checkout_session(self):
+    #     self.client.force_login(self.user)
+    #     url = reverse("payment:create-checkout-session")
+    #     print(url)
+    #     response = self.client.post(url)
+    #     print(response.status_code, response.content)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertIn("stripe.com", response.url)
