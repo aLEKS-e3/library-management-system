@@ -19,10 +19,16 @@ class BorrowingCreateSerializerTest(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_create_borrowing_with_invalid_data(self):
-        book = Book.objects.create(title='Test Book', author='Test Author', cover='HARD', inventory=0, daily_fee=10.0)
+        book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            cover="HARD",
+            inventory=0,
+            daily_fee=10.0
+        )
         payload = {
-            'expected_return_date': '2024-04-05',
-            'book': book.pk
+            "expected_return_date": "2024-04-05",
+            "book": book.pk
         }
 
         res = self.client.post(BORROWINGS_URL, payload)
@@ -30,10 +36,16 @@ class BorrowingCreateSerializerTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_borrowing_with_valid_data(self):
-        book = Book.objects.create(title='Test Book', author='Test Author', cover='HARD', inventory=10, daily_fee=10.0)
+        book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            cover="HARD",
+            inventory=10,
+            daily_fee=10.0
+        )
         payload = {
-            'expected_return_date': '2024-04-05',
-            'book': book.pk
+            "expected_return_date": "2024-04-05",
+            "book": book.pk
         }
 
         res = self.client.post(BORROWINGS_URL, payload)
