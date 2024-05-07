@@ -10,7 +10,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Borrowing
-        fields = ("expected_return_date", "book")
+        fields = ("id", "expected_return_date", "book")
 
     def validate_book(self, value):
         if value.inventory <= 0:
